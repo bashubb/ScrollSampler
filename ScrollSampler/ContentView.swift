@@ -28,7 +28,7 @@ struct ContentView: View {
                             Slider(value: $variant.xOffset, in: -1000...1000)
                         }
                         LabeledContent("yOffset"){
-                            Slider(value: $variant.yOffset, in: -1000...1000)
+                            Slider(value: $variant.yOffset, in: 0...1000)
                         }
                         LabeledContent("blur"){
                             Slider(value: $variant.blur, in: 0...50)
@@ -36,11 +36,36 @@ struct ContentView: View {
                         LabeledContent("saturation"){
                             Slider(value: $variant.saturation, in: 0...1)
                         }
+                        LabeledContent("Rotation degrees"){
+                            Slider(value: $variant.degrees, in: -180...180)
+                        }
+                        LabeledContent("Rotation x axis"){
+                            Slider(value: $variant.rotationX, in: 0...1)
+                        }
+                        LabeledContent("Rotation y axis"){
+                            Slider(value: $variant.rotationY, in: 0...1)
+                        }
+                        LabeledContent("Rotation z axis"){
+                            Slider(value: $variant.rotationZ, in: 0...1)
+                        }
                         
                     }
                 }
             }
-            .toolbar(.hidden)
+            .toolbar{
+                ToolbarItem(placement: .cancellationAction) {
+                    Button {
+                        dataModel = DataModel()
+                    } label: {
+                        Text("Reset")
+                            .foregroundStyle(Color.white)
+                            .padding(6)
+                            .background(Color.red.opacity(0.7), in: RoundedRectangle(cornerRadius: 8))
+                    }
+
+                    
+                }
+            }
         } detail: {
             ScrollView {
                 VStack {
@@ -56,6 +81,12 @@ struct ContentView: View {
                                     .scaleEffect(dataModel(\.scale, for: phase))
                                     .blur(radius:(dataModel(\.blur, for: phase)))
                                     .saturation(dataModel(\.saturation, for: phase))
+                                    .rotation3DEffect(Angle(degrees: dataModel(\.degrees, for: phase)),
+                                                      axis: (x: CGFloat(dataModel(\.rotationX, for: phase)),
+                                                             y: CGFloat(dataModel(\.rotationY, for: phase)),
+                                                             z: CGFloat(dataModel(\.rotationZ, for: phase))))
+                                                            
+                                    
                             }
                     }
                 }

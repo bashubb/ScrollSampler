@@ -43,6 +43,10 @@ class TransitionVariant: Identifiable {
     var yOffset = 0.0
     var blur = 0.0
     var saturation = 1.0
+    var degrees = 0.0
+    var rotationX = 0.0
+    var rotationY = 0.0
+    var rotationZ = 0.0
     
     init(id: String) {
         self.id = id
