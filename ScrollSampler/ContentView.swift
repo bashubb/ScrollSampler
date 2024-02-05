@@ -10,6 +10,8 @@ import SwiftUI
 struct ContentView: View {
     @State private var dataModel = DataModel()
     @State private var vertical = true
+    @State private var modifierName = ""
+    @State private var customModifier = ""
     
     let formatter: NumberFormatter
     
@@ -108,6 +110,7 @@ struct ContentView: View {
                         }
                     }
                     .padding()
+                    
                 }
                 .toolbar(.hidden)
                 .ignoresSafeArea()
@@ -121,6 +124,68 @@ struct ContentView: View {
         formatter.minimumFractionDigits = 2
         formatter.maximumFractionDigits = 2
         
+    }
+    
+    func createModifier(_ name: String) -> String {
+        // Creates string with custom modifier and View extension
+        
+        let modifier = """
+        struct Scroller: ViewModifier {
+            func body(content: Content) -> some View {
+                content
+                    .scrollTransition { element, phase in
+                        element
+                            .opacity(\(dataModel.variants[0].opacity))
+                            .opacity(\(dataModel.variants[1].opacity))
+                            .opacity(\(dataModel.variants[2].opacity))
+                            .offset(x: \(dataModel.variants[0].xOffset))
+                            .offset(x: \(dataModel.variants[1].xOffset))
+                            .offset(x: \(dataModel.variants[2].xOffset))
+                            .offset(y: \(dataModel.variants[0].yOffset))
+                            .offset(y: \(dataModel.variants[1].yOffset))
+                            .offset(y: \(dataModel.variants[2].yOffset))
+                            .scaleEffectoffset(\(dataModel.variants[0].scale))
+                            .scaleEffectoffset(\(dataModel.variants[1].scale))
+                            .scaleEffectoffset(\(dataModel.variants[2].scale))
+                            .blur(radius: \(dataModel.variants[0].blur))
+                            .blur(radius: \(dataModel.variants[1].blur))
+                            .blur(radius: \(dataModel.variants[2].blur))
+                            .saturation(\(dataModel.variants[0].saturation))
+                            .saturation(\(dataModel.variants[1].saturation))
+                            .saturation(\(dataModel.variants[2].saturation))
+                            .rotation3DEffect(
+                                Angle(degrees: dataModel(\(dataModel.variants[0].degrees)),
+                                axis: (
+                                    x: CGFloat(dataModel(\(dataModel.variants[0].rotationX)),
+                                    y: CGFloat(dataModel(\(dataModel.variants[0].rotationY)),
+                                    z: CGFloat(dataModel(\(dataModel.variants[0].rotationZ))
+                                ))
+                            .rotation3DEffect(
+                                Angle(degrees: dataModel(\(dataModel.variants[1].degrees)),
+                                axis: (
+                                    x: CGFloat(dataModel(\(dataModel.variants[1].rotationX)),
+                                    y: CGFloat(dataModel(\(dataModel.variants[1].rotationY)),
+                                    z: CGFloat(dataModel(\(dataModel.variants[1].rotationZ))
+                                ))
+                            .rotation3DEffect(
+                                Angle(degrees: dataModel(\(dataModel.variants[2].degrees)),
+                                axis: (
+                                    x: CGFloat(dataModel(\(dataModel.variants[2].rotationX)),
+                                    y: CGFloat(dataModel(\(dataModel.variants[2].rotationY)),
+                                    z: CGFloat(dataModel(\(dataModel.variants[2].rotationZ))
+                                ))
+                    }
+            }
+        }
+
+        extension View {
+            func \(name)() -> some View {
+                modifier(Scroller())
+            }
+        }
+        """
+        
+        return  modifier
     }
 }
 
