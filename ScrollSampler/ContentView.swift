@@ -54,6 +54,7 @@ struct ContentView: View {
                                 .background(Color.blue.opacity(0.8), in: RoundedRectangle(cornerRadius: 8))
                         }
                     }
+                    .padding(.bottom, 10)
                     .frame(maxWidth: .infinity)
                     .background(Color(red: 0.949, green: 0.949, blue: 0.971))
                     
@@ -68,35 +69,65 @@ struct ContentView: View {
                             @Bindable var variant = variant
                             Section(variant.id) {
                                 
-                                Text(formatter.string(for:variant.opacity) ?? "")
-                                LabeledContent("Opacity") {
+                                
+                                HStack {
+                                    Text("Opacity")
+                                    Text(formatter.string(for:variant.opacity) ?? "")
+                                        .font(.caption)
                                     Slider(value: $variant.opacity, in: 0...1)
                                 }
-                                LabeledContent("Scale") {
+                                HStack {
+                                    Text("Scale")
+                                    Text(formatter.string(for:variant.scale) ?? "")
+                                        .font(.caption)
                                     Slider(value: $variant.scale, in: 0...3)
                                 }
-                                LabeledContent("xOffset") {
+                                HStack {
+                                    Text("xOffset")
+                                    Text(formatter.string(for:variant.xOffset) ?? "")
+                                        .font(.caption)
                                     Slider(value: $variant.xOffset, in: -1000...1000)
                                 }
-                                LabeledContent("yOffset") {
+                                HStack {
+                                    Text("yOffset")
+                                    Text(formatter.string(for:variant.yOffset) ?? "")
+                                        .font(.caption)
                                     Slider(value: $variant.yOffset, in: 0...1000)
                                 }
-                                LabeledContent("blur") {
+                                HStack {
+                                    Text("blur")
+                                    Text(formatter.string(for:variant.blur) ?? "")
+                                        .font(.caption)
                                     Slider(value: $variant.blur, in: 0...50)
                                 }
-                                LabeledContent("saturation") {
+                                HStack {
+                                    Text("saturation")
+                                    Text(formatter.string(for:variant.saturation) ?? "")
+                                        .font(.caption)
                                     Slider(value: $variant.saturation, in: 0...1)
                                 }
-                                LabeledContent("Rotation degrees") {
+                                HStack {
+                                    Text("Rotation degrees")
+                                    Text(formatter.string(for:variant.degrees) ?? "")
+                                        .font(.caption)
                                     Slider(value: $variant.degrees, in: -180...180)
                                 }
-                                LabeledContent("Rotation x axis") {
+                                HStack {
+                                    Text ("Rotation x axis")
+                                    Text(formatter.string(for:variant.rotationX) ?? "")
+                                        .font(.caption)
                                     Slider(value: $variant.rotationX, in: 0...1)
                                 }
-                                LabeledContent("Rotation y axis") {
+                                HStack {
+                                    Text("Rotation y axis")
+                                    Text(formatter.string(for:variant.rotationY) ?? "")
+                                        .font(.caption)
                                     Slider(value: $variant.rotationY, in: 0...1)
                                 }
-                                LabeledContent("Rotation z axis") {
+                                HStack {
+                                    Text("Rotation z axis")
+                                    Text(formatter.string(for:variant.rotationZ) ?? "")
+                                        .font(.caption)
                                     Slider(value: $variant.rotationZ, in: 0...1)
                                 }
                                 
@@ -211,41 +242,17 @@ struct ContentView: View {
                     .scrollTransition { element, phase in
                         element
                             .opacity(phase == .topLeading ? \(dataModel.variants[0].opacity) : phase == .identity ? \(dataModel.variants[1].opacity) : \(dataModel.variants[2].opacity))
-                            .offset(x: \(dataModel.variants[0].xOffset))
-                            .offset(x: \(dataModel.variants[1].xOffset))
-                            .offset(x: \(dataModel.variants[2].xOffset))
-                            .offset(y: \(dataModel.variants[0].yOffset))
-                            .offset(y: \(dataModel.variants[1].yOffset))
-                            .offset(y: \(dataModel.variants[2].yOffset))
-                            .scaleEffect(\(dataModel.variants[0].scale))
-                            .scaleEffect(\(dataModel.variants[1].scale))
-                            .scaleEffect(\(dataModel.variants[2].scale))
-                            .blur(radius: \(dataModel.variants[0].blur))
-                            .blur(radius: \(dataModel.variants[1].blur))
-                            .blur(radius: \(dataModel.variants[2].blur))
-                            .saturation(\(dataModel.variants[0].saturation))
-                            .saturation(\(dataModel.variants[1].saturation))
-                            .saturation(\(dataModel.variants[2].saturation))
+                            .offset(x: phase == .topLeading ? \(dataModel.variants[0].xOffset) : phase == .identity ? \(dataModel.variants[1].xOffset) : \(dataModel.variants[2].xOffset))
+                            .offset(y: phase == .topLeading ? \(dataModel.variants[0].yOffset) : phase == .identity ? \(dataModel.variants[1].yOffset) : \(dataModel.variants[2].yOffset))
+                            .scaleEffect(phase == .topLeading ? \(dataModel.variants[0].scale) : phase == .identity ? \(dataModel.variants[1].scale) : \(dataModel.variants[2].scale))
+                            .blur(radius: phase == .topLeading ? \(dataModel.variants[0].blur) : phase == .identity ? \(dataModel.variants[1].blur) : \(dataModel.variants[2].blur))
+                            .saturation(phase == .topLeading ? \(dataModel.variants[0].saturation) : phase == .identity ? \(dataModel.variants[1].saturation) : \(dataModel.variants[2].saturation))
                             .rotation3DEffect(
-                                Angle(degrees: \(dataModel.variants[0].degrees)),
+                                Angle(degrees: phase == .topLeading ? \(dataModel.variants[0].degrees) : phase == .identity ? \(dataModel.variants[1].degrees) : \(dataModel.variants[2].degrees)),
                                 axis: (
-                                    x: CGFloat(\(dataModel.variants[0].rotationX)),
-                                    y: CGFloat(\(dataModel.variants[0].rotationY)),
-                                    z: CGFloat(\(dataModel.variants[0].rotationZ))
-                                ))
-                            .rotation3DEffect(
-                                Angle(degrees: \(dataModel.variants[1].degrees)),
-                                axis: (
-                                    x: CGFloat(\(dataModel.variants[1].rotationX)),
-                                    y: CGFloat(\(dataModel.variants[1].rotationY)),
-                                    z: CGFloat(\(dataModel.variants[1].rotationZ))
-                                ))
-                            .rotation3DEffect(
-                                Angle(degrees: \(dataModel.variants[2].degrees)),
-                                axis: (
-                                    x: CGFloat(\(dataModel.variants[2].rotationX)),
-                                    y: CGFloat(\(dataModel.variants[2].rotationY)),
-                                    z: CGFloat(\(dataModel.variants[2].rotationZ))
+                                    x: CGFloat(phase == .topLeading ? \(dataModel.variants[0].rotationX) : phase == .identity ? \(dataModel.variants[1].rotationX) : \(dataModel.variants[2].rotationX)),
+                                    y: CGFloat(phase == .topLeading ? \(dataModel.variants[0].rotationY) : phase == .identity ? \(dataModel.variants[1].rotationY) : \(dataModel.variants[2].rotationY)),
+                                    z: CGFloat(phase == .topLeading ? \(dataModel.variants[0].rotationZ) : phase == .identity ? \(dataModel.variants[1].rotationZ) : \(dataModel.variants[2].rotationZ))
                                 ))
                     }
             }
