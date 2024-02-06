@@ -11,9 +11,10 @@ struct ContentView: View {
     @State private var dataModel = DataModel()
     @State private var vertical = true
     
-    @State private var showPopup = true
+    @State private var showPopup = false
     @State private var modifierName = ""
-    @State private var customModifier = ""
+    @State private var buttonText = "Copy modifer to clipboard"
+    private let pasteboard = UIPasteboard.general
     
     let formatter: NumberFormatter
     
@@ -21,7 +22,7 @@ struct ContentView: View {
         ZStack {
             NavigationSplitView {
                 VStack(spacing:0) {
-                    HStack {
+                    VStack(spacing: 3) {
                         
                         Button {
                             dataModel = DataModel()
@@ -29,6 +30,7 @@ struct ContentView: View {
                             Text("Reset")
                                 .foregroundStyle(Color.white)
                                 .padding(6)
+                                .frame(width: 200, height: 40)
                                 .background(Color.red.opacity(0.7), in: RoundedRectangle(cornerRadius: 8))
                         }
                         
@@ -38,6 +40,7 @@ struct ContentView: View {
                             Text("Change Orientation")
                                 .foregroundStyle(Color.white)
                                 .padding(6)
+                                .frame(width: 200, height: 40)
                                 .background(Color.green.opacity(0.8), in: RoundedRectangle(cornerRadius: 8))
                         }
                         
@@ -47,6 +50,7 @@ struct ContentView: View {
                             Text("Generate modifier")
                                 .foregroundStyle(Color.white)
                                 .padding(6)
+                                .frame(width: 200, height: 40)
                                 .background(Color.blue.opacity(0.8), in: RoundedRectangle(cornerRadius: 8))
                         }
                     }
@@ -54,9 +58,11 @@ struct ContentView: View {
                     .background(Color(red: 0.949, green: 0.949, blue: 0.971))
                     
                     Form {
-                        Button ("Edge opacity") {
-                            dataModel.variants[0].opacity = 0.0
-                            dataModel.variants[2].opacity = 0.0
+                        Section("Presets") {
+                            Button ("Edge opacity") {
+                                dataModel.variants[0].opacity = 0.0
+                                dataModel.variants[2].opacity = 0.0
+                            }
                         }
                         ForEach(dataModel.variants) { variant in
                             @Bindable var variant = variant
@@ -138,13 +144,12 @@ struct ContentView: View {
                     VStack(spacing: 15) {
                         HStack {
                             Spacer()
-                            Text("Copy your modifier")
+                            Text("Generate custom modifier")
                                 .bold()
-                                .padding()
-                                
                                 .foregroundStyle(Color.white)
                             Button {
                                 self.showPopup = false
+                                modifierName = ""
                             } label: {
                                 Image(systemName: "xmark.circle")
                             }
@@ -157,23 +162,28 @@ struct ContentView: View {
                         
                         Spacer()
                         Text("Enter name for your modifier")
-                            .font(.caption.weight(.medium))
+                            
                         TextField("Modifier name", text: $modifierName)
                             .textFieldStyle(.roundedBorder)
+                            .textInputAutocapitalization(.never)
                             .padding()
                         
-                        Button("Copy modifer") {
-                            
+                        Button(buttonText) {
+                            pasteboard.string = createModifier(modifierName)
+                            withAnimation {
+                                buttonText = "Copied!"
+                                
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+                                    buttonText = "Copy modifer to clipboard"
+                                }
+                            }
+                           
                         }
                         .disabled(modifierName == "")
                         .buttonStyle(.bordered)
-                        
-                       
-                        .padding(.bottom)
-                        
-                        
+                        .padding(.bottom, 30)
                     }
-                    .frame(width: 300 , height: 300)
+                    .frame(width: 350 , height: 300)
                     .background(Color.white)
                     .clipShape(.rect(cornerRadius: 20))
                     .shadow(radius: 20)
@@ -200,18 +210,16 @@ struct ContentView: View {
                 content
                     .scrollTransition { element, phase in
                         element
-                            .opacity(\(dataModel.variants[0].opacity))
-                            .opacity(\(dataModel.variants[1].opacity))
-                            .opacity(\(dataModel.variants[2].opacity))
+                            .opacity(phase == .topLeading ? \(dataModel.variants[0].opacity) : phase == .identity ? \(dataModel.variants[1].opacity) : \(dataModel.variants[2].opacity))
                             .offset(x: \(dataModel.variants[0].xOffset))
                             .offset(x: \(dataModel.variants[1].xOffset))
                             .offset(x: \(dataModel.variants[2].xOffset))
                             .offset(y: \(dataModel.variants[0].yOffset))
                             .offset(y: \(dataModel.variants[1].yOffset))
                             .offset(y: \(dataModel.variants[2].yOffset))
-                            .scaleEffectoffset(\(dataModel.variants[0].scale))
-                            .scaleEffectoffset(\(dataModel.variants[1].scale))
-                            .scaleEffectoffset(\(dataModel.variants[2].scale))
+                            .scaleEffect(\(dataModel.variants[0].scale))
+                            .scaleEffect(\(dataModel.variants[1].scale))
+                            .scaleEffect(\(dataModel.variants[2].scale))
                             .blur(radius: \(dataModel.variants[0].blur))
                             .blur(radius: \(dataModel.variants[1].blur))
                             .blur(radius: \(dataModel.variants[2].blur))
@@ -219,25 +227,25 @@ struct ContentView: View {
                             .saturation(\(dataModel.variants[1].saturation))
                             .saturation(\(dataModel.variants[2].saturation))
                             .rotation3DEffect(
-                                Angle(degrees: dataModel(\(dataModel.variants[0].degrees)),
+                                Angle(degrees: \(dataModel.variants[0].degrees)),
                                 axis: (
-                                    x: CGFloat(dataModel(\(dataModel.variants[0].rotationX)),
-                                    y: CGFloat(dataModel(\(dataModel.variants[0].rotationY)),
-                                    z: CGFloat(dataModel(\(dataModel.variants[0].rotationZ))
+                                    x: CGFloat(\(dataModel.variants[0].rotationX)),
+                                    y: CGFloat(\(dataModel.variants[0].rotationY)),
+                                    z: CGFloat(\(dataModel.variants[0].rotationZ))
                                 ))
                             .rotation3DEffect(
-                                Angle(degrees: dataModel(\(dataModel.variants[1].degrees)),
+                                Angle(degrees: \(dataModel.variants[1].degrees)),
                                 axis: (
-                                    x: CGFloat(dataModel(\(dataModel.variants[1].rotationX)),
-                                    y: CGFloat(dataModel(\(dataModel.variants[1].rotationY)),
-                                    z: CGFloat(dataModel(\(dataModel.variants[1].rotationZ))
+                                    x: CGFloat(\(dataModel.variants[1].rotationX)),
+                                    y: CGFloat(\(dataModel.variants[1].rotationY)),
+                                    z: CGFloat(\(dataModel.variants[1].rotationZ))
                                 ))
                             .rotation3DEffect(
-                                Angle(degrees: dataModel(\(dataModel.variants[2].degrees)),
+                                Angle(degrees: \(dataModel.variants[2].degrees)),
                                 axis: (
-                                    x: CGFloat(dataModel(\(dataModel.variants[2].rotationX)),
-                                    y: CGFloat(dataModel(\(dataModel.variants[2].rotationY)),
-                                    z: CGFloat(dataModel(\(dataModel.variants[2].rotationZ))
+                                    x: CGFloat(\(dataModel.variants[2].rotationX)),
+                                    y: CGFloat(\(dataModel.variants[2].rotationY)),
+                                    z: CGFloat(\(dataModel.variants[2].rotationZ))
                                 ))
                     }
             }
