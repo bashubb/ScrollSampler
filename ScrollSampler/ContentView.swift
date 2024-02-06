@@ -10,111 +10,176 @@ import SwiftUI
 struct ContentView: View {
     @State private var dataModel = DataModel()
     @State private var vertical = true
+    
+    @State private var showPopup = true
     @State private var modifierName = ""
     @State private var customModifier = ""
     
     let formatter: NumberFormatter
     
     var body: some View {
-        NavigationSplitView {
-            VStack(spacing:0) {
-                HStack {
-                    
-                    Button {
-                        dataModel = DataModel()
-                    } label: {
-                        Text("Reset")
-                            .foregroundStyle(Color.white)
-                            .padding(6)
-                            .background(Color.red.opacity(0.7), in: RoundedRectangle(cornerRadius: 8))
-                    }
-                    
-                    Button {
-                        vertical.toggle()
-                    } label: {
-                        Text("Change Orientation")
-                            .foregroundStyle(Color.white)
-                            .padding(6)
-                            .background(Color.green.opacity(0.8), in: RoundedRectangle(cornerRadius: 8))
-                    }
-                }
-                .frame(maxWidth: .infinity)
-                .background(Color(red: 0.949, green: 0.949, blue: 0.971))
-                
-                Form {
-                    Button ("Edge opacity") {
-                        dataModel.variants[0].opacity = 0.0
-                        dataModel.variants[2].opacity = 0.0
-                    }
-                    ForEach(dataModel.variants) { variant in
-                        @Bindable var variant = variant
-                        Section(variant.id) {
-                            
-                            Text(formatter.string(for:variant.opacity) ?? "")
-                            LabeledContent("Opacity") {
-                                Slider(value: $variant.opacity, in: 0...1)
-                            }
-                            LabeledContent("Scale") {
-                                Slider(value: $variant.scale, in: 0...3)
-                            }
-                            LabeledContent("xOffset") {
-                                Slider(value: $variant.xOffset, in: -1000...1000)
-                            }
-                            LabeledContent("yOffset") {
-                                Slider(value: $variant.yOffset, in: 0...1000)
-                            }
-                            LabeledContent("blur") {
-                                Slider(value: $variant.blur, in: 0...50)
-                            }
-                            LabeledContent("saturation") {
-                                Slider(value: $variant.saturation, in: 0...1)
-                            }
-                            LabeledContent("Rotation degrees") {
-                                Slider(value: $variant.degrees, in: -180...180)
-                            }
-                            LabeledContent("Rotation x axis") {
-                                Slider(value: $variant.rotationX, in: 0...1)
-                            }
-                            LabeledContent("Rotation y axis") {
-                                Slider(value: $variant.rotationY, in: 0...1)
-                            }
-                            LabeledContent("Rotation z axis") {
-                                Slider(value: $variant.rotationZ, in: 0...1)
-                            }
-                            
-                        }
-                    }
-                }
-                .toolbar (.hidden)
-            }
-        } detail: {
-            if vertical {
-                ScrollView {
-                    VStack {
-                        ForEach(0..<100) { i in
-                            ScrollingRectangle(dataModel: dataModel)
-                                .frame(height:100)
-                        }
-                    }
-                    .padding()
-                }
-                .toolbar(.hidden)
-                .ignoresSafeArea()
-            }
-            else {
-                ScrollView(.horizontal) {
+        ZStack {
+            NavigationSplitView {
+                VStack(spacing:0) {
                     HStack {
-                        ForEach(0..<100) { i in
-                            ScrollingRectangle(dataModel: dataModel)
-                                .frame(width:100)
+                        
+                        Button {
+                            dataModel = DataModel()
+                        } label: {
+                            Text("Reset")
+                                .foregroundStyle(Color.white)
+                                .padding(6)
+                                .background(Color.red.opacity(0.7), in: RoundedRectangle(cornerRadius: 8))
+                        }
+                        
+                        Button {
+                            vertical.toggle()
+                        } label: {
+                            Text("Change Orientation")
+                                .foregroundStyle(Color.white)
+                                .padding(6)
+                                .background(Color.green.opacity(0.8), in: RoundedRectangle(cornerRadius: 8))
+                        }
+                        
+                        Button {
+                            showPopup = true
+                        } label: {
+                            Text("Generate modifier")
+                                .foregroundStyle(Color.white)
+                                .padding(6)
+                                .background(Color.blue.opacity(0.8), in: RoundedRectangle(cornerRadius: 8))
                         }
                     }
-                    .padding()
+                    .frame(maxWidth: .infinity)
+                    .background(Color(red: 0.949, green: 0.949, blue: 0.971))
+                    
+                    Form {
+                        Button ("Edge opacity") {
+                            dataModel.variants[0].opacity = 0.0
+                            dataModel.variants[2].opacity = 0.0
+                        }
+                        ForEach(dataModel.variants) { variant in
+                            @Bindable var variant = variant
+                            Section(variant.id) {
+                                
+                                Text(formatter.string(for:variant.opacity) ?? "")
+                                LabeledContent("Opacity") {
+                                    Slider(value: $variant.opacity, in: 0...1)
+                                }
+                                LabeledContent("Scale") {
+                                    Slider(value: $variant.scale, in: 0...3)
+                                }
+                                LabeledContent("xOffset") {
+                                    Slider(value: $variant.xOffset, in: -1000...1000)
+                                }
+                                LabeledContent("yOffset") {
+                                    Slider(value: $variant.yOffset, in: 0...1000)
+                                }
+                                LabeledContent("blur") {
+                                    Slider(value: $variant.blur, in: 0...50)
+                                }
+                                LabeledContent("saturation") {
+                                    Slider(value: $variant.saturation, in: 0...1)
+                                }
+                                LabeledContent("Rotation degrees") {
+                                    Slider(value: $variant.degrees, in: -180...180)
+                                }
+                                LabeledContent("Rotation x axis") {
+                                    Slider(value: $variant.rotationX, in: 0...1)
+                                }
+                                LabeledContent("Rotation y axis") {
+                                    Slider(value: $variant.rotationY, in: 0...1)
+                                }
+                                LabeledContent("Rotation z axis") {
+                                    Slider(value: $variant.rotationZ, in: 0...1)
+                                }
+                                
+                            }
+                        }
+                    }
+                    .toolbar (.hidden)
+                }
+            } detail: {
+                if vertical {
+                    ScrollView {
+                        VStack {
+                            ForEach(0..<100) { i in
+                                ScrollingRectangle(dataModel: dataModel)
+                                    .frame(height:100)
+                            }
+                        }
+                        .padding()
+                    }
+                    .toolbar(.hidden)
+                    .ignoresSafeArea()
+                }
+                else {
+                    ScrollView(.horizontal) {
+                        HStack {
+                            ForEach(0..<100) { i in
+                                ScrollingRectangle(dataModel: dataModel)
+                                    .frame(width:100)
+                            }
+                        }
+                        .padding()
+                        
+                    }
+                    .toolbar(.hidden)
+                    .ignoresSafeArea()
                     
                 }
-                .toolbar(.hidden)
-                .ignoresSafeArea()
+            }
+           
+            if $showPopup.wrappedValue {
+                ZStack {
+                    Color.black.opacity(0.4)
+                        .ignoresSafeArea()
+                    //Popup
+                    VStack(spacing: 15) {
+                        HStack {
+                            Spacer()
+                            Text("Copy your modifier")
+                                .bold()
+                                .padding()
+                                
+                                .foregroundStyle(Color.white)
+                            Button {
+                                self.showPopup = false
+                            } label: {
+                                Image(systemName: "xmark.circle")
+                            }
+                            .font(.title)
+                            .foregroundStyle(Color.white)
+                            .padding()
+                        }
+                        .frame(maxWidth: /*@START_MENU_TOKEN@*/.infinity/*@END_MENU_TOKEN@*/)
+                        .background(Color.blue.opacity(0.8))
+                        
+                        Spacer()
+                        Text("Enter name for your modifier")
+                            .font(.caption.weight(.medium))
+                        TextField("Modifier name", text: $modifierName)
+                            .textFieldStyle(.roundedBorder)
+                            .padding()
+                        
+                        Button("Copy modifer") {
+                            
+                        }
+                        .disabled(modifierName == "")
+                        .buttonStyle(.bordered)
+                        
+                       
+                        .padding(.bottom)
+                        
+                        
+                    }
+                    .frame(width: 300 , height: 300)
+                    .background(Color.white)
+                    .clipShape(.rect(cornerRadius: 20))
+                    .shadow(radius: 20)
+                    
                 
+                }
             }
         }
     }
@@ -177,7 +242,7 @@ struct ContentView: View {
                     }
             }
         }
-
+        
         extension View {
             func \(name)() -> some View {
                 modifier(Scroller())
