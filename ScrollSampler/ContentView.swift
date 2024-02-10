@@ -54,7 +54,7 @@ struct ContentView: View {
                                 .background(Color.blue.opacity(0.8), in: RoundedRectangle(cornerRadius: 8))
                         }
                     }
-                    .padding(.bottom, 10)
+                    .padding(.vertical, 15)
                     .frame(maxWidth: .infinity)
                     .background(Color(red: 0.949, green: 0.949, blue: 0.971))
                     
@@ -223,6 +223,7 @@ struct ContentView: View {
                 }
             }
         }
+        .statusBarHidden()
     }
     
     init() {
