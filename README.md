@@ -29,6 +29,7 @@ To use ScrollSampler in your project, follow these steps:
 
 ## Preview 🖼️
 
+<img src="https://github.com/bashubb/ScrollSampler/blob/main/scroll_sampler.gif" >
 
 ## License 📝
 
