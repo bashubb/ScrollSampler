@@ -35,6 +35,4 @@ To use ScrollSampler in your project, follow these steps:
 
 This project is licensed under the MIT License.
 
-* * *
 
-Feel free to customize this README further to include any additional details or instructions specific to your project.
